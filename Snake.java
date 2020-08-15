@@ -8,7 +8,7 @@ public class Snake {
     Point head;
     Point apple;
     private ArrayList<Point> body = new ArrayList<>();
-    public final int SIZE = 10;
+    public final int SIZE = 20;
     public int direction;
 
     public Snake(int width, int height) {
@@ -23,6 +23,9 @@ public class Snake {
         if (head.equals(apple)) {
             body.add(new Point(head.x, head.y));
             apple.setLocation(SnakeMain.appleSetter(SIZE));
+            while (hasBod(apple)) {
+                apple.setLocation(SnakeMain.appleSetter(SIZE));
+            }
             return true;
         }
         return false;
@@ -35,6 +38,9 @@ public class Snake {
             }
             body.set(0, new Point(head.x, head.y));
         }
+    }
 
+    public boolean hasBod(Point pt) {
+        return (body.contains(pt));
     }
 }

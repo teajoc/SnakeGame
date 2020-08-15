@@ -16,7 +16,7 @@ public class BGPanel extends JPanel {
     protected void paintComponent(Graphics graph) {
         super.paintComponent(graph);
         graph.setColor(BG_COLOR); // draw bg
-        graph.fillRect(0, 0, 500, 500);
+        graph.fillRect(0, 0, SnakeMain.WIDTH, SnakeMain.HEIGHT);
         graph.setColor(Color.RED); // draw apple
         graph.fillRect(snake.apple.x - snake.SIZE / 2, snake.apple.y - snake.SIZE / 2,
                 snake.SIZE, snake.SIZE);
