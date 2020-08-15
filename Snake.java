@@ -5,29 +5,27 @@ import java.util.ArrayList;
 
 public class Snake {
 
-    protected Point head;
-    protected Point apple;
+    Point head;
+    Point apple;
     private ArrayList<Point> body = new ArrayList<>();
-    public static final int SIZE = 10;
+    public final int SIZE = 10;
     public int direction;
 
-    public Snake(SnakeMain board) {
-        head = new Point(board.WIDTH / 2, board.HEIGHT / 2);
-        /*body.add(new Point(head.x + SIZE, head.y)); /////
-        body.add(new Point(head.x + SIZE + SIZE, head.y));
-        body.add(new Point(head.x + SIZE + SIZE + SIZE, head.y));*/
+    public Snake(int width, int height) {
+        head = new Point(width / 2, height / 2);
     }
 
     public ArrayList<Point> getBod() {
         return body;
     }
 
-    public void munch() {
-        if (head.x - apple.x < SIZE / 2 && head.y - apple.y < SIZE / 2) {
+    public boolean munch() {
+        if (head.equals(apple)) {
             body.add(new Point(head.x, head.y));
-            apple = SnakeMain.appleSetter(SIZE);
-            System.out.println("munch");
+            apple.setLocation(SnakeMain.appleSetter(SIZE));
+            return true;
         }
+        return false;
     }
 
     public void incr() {
