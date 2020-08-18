@@ -10,42 +10,55 @@ import java.util.Random;
 
 public class SnakeMain implements ActionListener, KeyListener {
 
-    public static final int WIDTH = 400;
-    public static final int HEIGHT = 400;
+    public static final int WIDTH = 400, HEIGHT = 400;
+
     private int tick = 0;
+
     private JFrame frame;
+
     private static Random rand;
-    private boolean gameOver;
+
+    private boolean gameOver, typed;
+
     Timer timer;
+
     Snake snake;
+
     private BGPanel bg;
+
     private JLabel startText;
+
     private int score;
+
     private static final int POINTS = 10;
+
     private static final int DELAY = 20;
+
     static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 
     public SnakeMain() {
-        frame = new JFrame("My Snake Game");
+        frame = new JFrame("My Snake Game"); // set up frame
         frame.setVisible(true);
         frame.setSize(WIDTH, HEIGHT);
         frame.setResizable(false);
+
         snake = new Snake(WIDTH, HEIGHT);
         rand = new Random();
         snake.apple = appleSetter(snake.SIZE);
         bg = new BGPanel(snake);
-        startText = new JLabel("Press 'p' to play");
-        startText.setForeground(Color.YELLOW);
+        timer = new Timer(DELAY, this);
+
+        startText = new JLabel("Press 'p' to play"); // add start menu
+        startText.setForeground(BGPanel.SNAKE_COLOR);
         startText.setFont(new Font("Verdana", 1, 15));
         bg.add(startText);
+
         frame.add(bg);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.addKeyListener(this);
-        //gamePlay();
     }
 
     public void gamePlay() {
-        timer = new Timer(DELAY, this);
         timer.start();
         score = 0;
         snake.direction = UP;
@@ -61,18 +74,11 @@ public class SnakeMain implements ActionListener, KeyListener {
         tick++;
         if (tick % 20 == 0 && !gameOver) {
             bg.repaint();
-            boolean munched = snake.munch();
-            if (munched) { // increases speed and score each time snake gets apple
-                if (timer.getDelay() > 0 && score % (POINTS * 2) == 0) {
-                    if (timer.getDelay() <= DELAY / 4) {
-                        timer.setDelay(timer.getDelay() - 1);
-                    } else {
-                        timer.setDelay(timer.getDelay() - DELAY / 10);
-                    }
-                }
-                score += POINTS;
+            if (snake.munch()) {
+                scored(timer.getDelay()); // updates score and speed
             }
             snake.incr();
+            typed = false;
             if (snake.direction == UP && !(snake.head.y == 0)) {
                 snake.head.y -= snake.SIZE;
             } else if (snake.direction == RIGHT && !(snake.head.x == WIDTH)) {
@@ -89,14 +95,20 @@ public class SnakeMain implements ActionListener, KeyListener {
             }
         }
         if (gameOver) {
-            JLabel endText = new JLabel("GAME OVER - FINAL SCORE: " + score);
-            endText.setForeground(Color.YELLOW);
-            endText.setFont(new Font("Verdana", 1, 15));
-            bg.add(endText);
-            frame.add(bg);
+            startText.setText("GAME OVER - FINAL SCORE: " + score);
             bg.repaint();
         }
+    }
 
+    private void scored(int currDelay) {
+        if (currDelay > 5 && score % (POINTS * 2) == 0) { // if player scores twice, speed increases
+            if (currDelay <= DELAY / 4) {
+                timer.setDelay(currDelay - 1);
+            } else {
+                timer.setDelay(currDelay - DELAY / 10);
+            }
+        }
+        score += POINTS;
     }
 
     public static Point appleSetter(int size) {
@@ -107,42 +119,41 @@ public class SnakeMain implements ActionListener, KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        if (!gameOver) {
+        if (!gameOver && !typed) {
             if (e.getKeyChar() == 'w') {
                 if (snake.getBod().isEmpty() || !(snake.direction == DOWN)) {
                     snake.direction = UP;
+                    typed = true;
                 }
             } else if (e.getKeyChar() == 'd') {
                 if (snake.getBod().isEmpty() || !(snake.direction == LEFT)) {
                     snake.direction = RIGHT;
+                    typed = true;
                 }
             } else if (e.getKeyChar() == 's') {
                 if (snake.getBod().isEmpty() || !(snake.direction == UP)) {
                     snake.direction = DOWN;
+                    typed = true;
                 }
             } else if (e.getKeyChar() == 'a') {
                 if (snake.getBod().isEmpty() || !(snake.direction == RIGHT)) {
                     snake.direction = LEFT;
+                    typed = true;
                 }
             } else if (e.getKeyChar() == 'q') {
-                System.out.println("SCORE: " + score);
                 gameOver = true;
-            } else if (e.getKeyChar() == 'p') {
-                bg.remove(startText);
+            } else if (e.getKeyChar() == 'p' && !timer.isRunning()) {
+                startText.setText("");
                 gamePlay();
-            } else if (e.getKeyChar() == 'r') {
-
             }
         }
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-
     }
 }
